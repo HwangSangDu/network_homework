@@ -2,15 +2,21 @@
  #include <stdio.h>
 
  int main(int argc, char *argv[])
+
  {
+	
 	pcap_t *handle;			/* Session handle */
+	
 	char *dev;			/* The device to sniff on */
 	char errbuf[PCAP_ERRBUF_SIZE];	/* Error string */
 	struct bpf_program fp;		/* The compiled filter */
 	char filter_exp[] = "port 80";	/* The filter expression */
 	bpf_u_int32 mask;		/* Our netmask */
 	bpf_u_int32 net;		/* Our IP */
-	struct pcap_pkthdr header;	/* The header that pcap gives us */
+	struct pcap_pkthdr* header;	/* The header that pcap gives us */
+
+
+
 	const u_char *packet;		/* The actual packet */
 
 	/* Define the device */
@@ -43,11 +49,14 @@
 	/* Grab a packet */
 	while(1)
 	{
-		packet = pcap_next(handle, &header);
+		
+		//packet = pcap_next(handle, &header);
+		pcap_next_ex(handle,&header, &packet);
+		
 		/* Print its length */
-		printf("Jacked a packet with length of [%d]\n", header.len);
+		printf("Jacked a packet with length of [%d]\n", header->len);
 		/* And close the session */
-		pcap_close(handle);
 	}
+	pcap_close(handle);
 	return(0);
  }
