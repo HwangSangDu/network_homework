@@ -1,14 +1,31 @@
  #include <pcap.h>
  #include <stdio.h>
  #include <string.h>
+ #include <stdlib.h>
 //eth.smac, eth.dmac / ip.sip, ip.dip / tcp.sport, tcp.dport / data
 typedef struct  packet_address
 {
-	u_char eth[2][10];
+	/*
+	u_char* eth[2];
 	u_char* ip[2];
 	u_char* port[2];
 	u_char* data[2];
+	//*/
+	int eth[2];//start ,end
+	int ip[2];
+	int port[2];
+	int data[2];
 }Packet;
+
+u_char* my_strncpy(u_char* d,const u_char* s ,int len)
+{
+	int i;
+	d = malloc(sizeof(u_char)*(len+1));
+	for (i = 0; i < len; ++i)
+		d[i] = s[i];
+	d[len] = '\0';
+	return d;
+}
  int main(int argc, char *argv[])
  {
  	Packet p;
@@ -55,20 +72,49 @@ typedef struct  packet_address
 	while(1)
 	{
 		packet = pcap_next(handle, &header);
-		/*
+		///*
 		if(packet){
 			for (i = 0; i < 6; ++i)
-				printf("%x" ,packet[i]);
+				printf("%0x" ,packet[i]);
+			printf("\n");
+		}
+
+		if(packet){
+			for (i = 6; i < 12; ++i)
+				printf("%0x" ,packet[i]);
+			printf("\n");
+		}
+
+		if(packet){
+			for (i = 26; i < 30; ++i)
+				printf("%0x" ,packet[i]);
+			printf("\n");
+		}
+
+		if(packet){
+			for (i = 30; i < 34; ++i)
+				printf("%0x" ,packet[i]);
+			printf("\n");
+		}
+
+		if(packet){
+			for (i = 34; i < 36; ++i)
+				printf("%0x" ,packet[i]);
+			printf("\n");
+		}
+		if(packet){
+			for (i = 36; i < 38; ++i)
+				printf("%0x" ,packet[i]);
 			printf("\n");
 		}
 		//*/
-		///*
+		/*
 		printf("Jacked a packet with length of [%d]\n", header.len);
 		if(packet)//packet != NULL
 		{
-			strncpy(p.eth[0],packet ,6);
-			for (i = 0; i < strlen(p.eth[0]); ++i)
-				printf("%x",*(p.eth[0]));
+			my_strncpy(p.eth[0] , packet , 6);
+			for (i = 0; i < (int)strlen(p.eth[0]); ++i)
+				printf("%x",p.eth[0][i]);
 			printf("\n");
 		}
 		//*/
@@ -80,3 +126,4 @@ typedef struct  packet_address
 	pcap_close(handle);
 	return(0);
  }
+
