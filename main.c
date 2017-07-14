@@ -1,8 +1,6 @@
-#include <pcap.h>
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
+#include "packet.h"
 //eth.smac, eth.dmac / ip.sip, ip.dip / tcp.sport, tcp.dport / data
+<<<<<<< HEAD:pcap_test.c
 #define DESTINATION 0
 #define SOURCE 1
 #define MACADDRSIZE 6
@@ -79,11 +77,12 @@ void str_to_hex_print(u_char* str)
 	//{
 
 	//}
+=======
+>>>>>>> f4ae8a6326cf424c644b808142a412b77825cc8e:main.c
 
 int main(int argc, char *argv[])
 {
 	Packet p;
-	u_int i;
 	pcap_t *handle;			/* Session handle */
 	char *dev;			/* The device to sniff on */
 	char errbuf[PCAP_ERRBUF_SIZE];	/* Error string */
@@ -126,43 +125,7 @@ int main(int argc, char *argv[])
 	while (1)
 	{
 		packet = pcap_next(handle, &header);
-		/*
-		printf("Jacked a packet with length of [%d]\n", header.len);
-		if(packet){
-		for (i = 0; i < 6; ++i)
-		printf("%02x" ,packet[i]);
-		printf("\n");
-		}
-
-		if(packet){
-		for (i = 6; i < 12; ++i)
-		printf("%02x" ,packet[i]);
-		printf("\n");
-		}
-
-		if(packet){
-		for (i = 26; i < 30; ++i)
-		printf("%02x" ,packet[i]);
-		printf("\n");
-		}
-
-		if(packet){
-		for (i = 30; i < 34; ++i)
-		printf("%02x" ,packet[i]);
-		printf("\n");
-		}
-
-		if(packet){
-		for (i = 34; i < 36; ++i)
-		printf("%02x" ,packet[i]);
-		printf("\n");
-		}
-		if(packet){
-		for (i = 36; i < 38; ++i)
-		printf("%02x" ,packet[i]);
-		printf("\n");
-		}
-		//*/
+		
 		///*
 		printf("Jacked a packet with length of [%d]\n", header.len);
 		if (packet)//packet != NULL
@@ -176,19 +139,19 @@ int main(int argc, char *argv[])
 			printf("\n\n");
 			printf("*********** Ethernet *****************\n");
 			printf("%-15s" , "DESTINATION : ");
-			str_to_hex_print(p.eth[DESTINATION]);
+			str_to_hex_print(p.eth[DESTINATION] , MACADDRSIZE);
 			printf("%-15s" , "SOURCE : ");
-			str_to_hex_print(p.eth[SOURCE]);
+			str_to_hex_print(p.eth[SOURCE] , MACADDRSIZE);
 			printf("*********** IP *****************\n");
 			printf("%-15s" , "DESTINATION : ");
-			str_to_hex_print(p.ip[DESTINATION]);
+			str_to_hex_print(p.ip[DESTINATION] , IPADDRSIZE);
 			printf("%-15s" , "SOURCE : ");
-			str_to_hex_print(p.ip[SOURCE]);
+			str_to_hex_print(p.ip[SOURCE] , IPADDRSIZE);
 			printf("*********** Port *****************\n");
 			printf("%-15s" , "DESTINATION : ");
-			str_to_hex_print(p.port[DESTINATION]);
+			str_to_hex_print(p.port[DESTINATION] , PORTNUMSIZE);
 			printf("%-15s" , "SOURCE : ");
-			str_to_hex_print(p.port[SOURCE]);
+			str_to_hex_print(p.port[SOURCE] , PORTNUMSIZE);
 			printf("\n\n");
 		}
 		//*/
