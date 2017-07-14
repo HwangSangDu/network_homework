@@ -3,17 +3,20 @@
 #include <string.h>
 #include <stdlib.h>
 //eth.smac, eth.dmac / ip.sip, ip.dip / tcp.sport, tcp.dport / data
-#define DESTINATION 1
-#define SOURCE 2
-#define MACSIZE 6
-#define IPSIZE 4
-#define PORTSIZE 2
+#define DESTINATION 0
+#define SOURCE 1
+#define MACADDRSIZE 6
+#define IPADDRSIZE 4
+#define PORTNUMSIZE 2
+#define ETHSIZE 14
+#define IPSIZE 20
+
 typedef struct  packet_address
 {
 	///*
-	u_char eth[2][MAXSIZE];
-	u_char ip[2][IPSIZE];
-	u_char port[2][PORTSIZE];
+	u_char eth[2][MACADDRSIZE];
+	u_char ip[2][IPADDRSIZE];
+	u_char port[2][PORTNUMSIZE];
 	u_char data[2];
 	//*/
 	/*
@@ -23,6 +26,8 @@ typedef struct  packet_address
 	int data[2];
 	//*/
 }Packet;
+
+
 /*
 u_char* my_strncpy(u_char* d, const u_char* s, int len)
 {
@@ -38,13 +43,43 @@ return d;
 ///*
 u_char* my_memcpy(u_char* d, const u_char* s, int len)
 {
-	u_int i;
-	d = (u_char *)malloc(sizeof(u_char) * (len + 1));
+	int i;
+	//d = (u_char *)malloc(sizeof(u_char) * (len + 1));
 	for (i = 0; i < len; ++i)
 		d[i] = s[i];
 	return d;
 }
 //*/
+
+void str_to_hex_print(u_char* str)
+{
+	int i;
+	printf("%d\n",sizeof(str));
+	for (i = 0; i < sizeof(str) / sizeof(u_char) ; i++)
+		printf("%02x", str[i]);
+	printf("\n");
+}
+	//for (i = 0; i < MACADDRSIZE; i++)
+	//{
+
+	//}
+	//for (i = 0; i < IPADDRSIZE; i++)
+	//{
+
+	//}
+	//for (i = 0; i < IPADDRSIZE; i++)
+	//{
+
+	//}
+	//for (i = 0; i < PORTNUMSIZE; i++)
+	//{
+
+	//}
+	//for (i = 0; i < PORTNUMSIZE; i++)
+	//{
+
+	//}
+
 int main(int argc, char *argv[])
 {
 	Packet p;
@@ -132,15 +167,29 @@ int main(int argc, char *argv[])
 		printf("Jacked a packet with length of [%d]\n", header.len);
 		if (packet)//packet != NULL
 		{
-			//my_strncpy(p.eth[0] , packet , 6);
-			//memcpy(p.eth[0], packet, 6);
-
-			//동적할당을 하고서 매개변수 인자로 넘겨야만 한다.
-			my_memcpy(p.eth[0], packet, 6);
-
-			for (i = 0; i < 6; ++i)
-				printf("%02x", p.eth[0][i]);
-			printf("\n");
+			my_memcpy(p.eth[DESTINATION], packet, MACADDRSIZE);
+			my_memcpy(p.eth[SOURCE], packet + MACADDRSIZE , MACADDRSIZE);
+			my_memcpy(p.ip[SOURCE], packet + ETHSIZE , IPSIZE);
+			my_memcpy(p.ip[DESTINATION], packet + ETHSIZE + IPSIZE, IPSIZE);
+			my_memcpy(p.port[SOURCE], packet + ETHSIZE + IPSIZE, PORTNUMSIZE);
+			my_memcpy(p.port[DESTINATION], packet + ETHSIZE + IPSIZE + PORTNUMSIZE, PORTNUMSIZE);
+			printf("\n\n");
+			printf("*********** Ethernet *****************\n");
+			printf("%-15s" , "DESTINATION : ");
+			str_to_hex_print(p.eth[DESTINATION]);
+			printf("%-15s" , "SOURCE : ");
+			str_to_hex_print(p.eth[SOURCE]);
+			printf("*********** IP *****************\n");
+			printf("%-15s" , "DESTINATION : ");
+			str_to_hex_print(p.ip[DESTINATION]);
+			printf("%-15s" , "SOURCE : ");
+			str_to_hex_print(p.ip[SOURCE]);
+			printf("*********** Port *****************\n");
+			printf("%-15s" , "DESTINATION : ");
+			str_to_hex_print(p.port[DESTINATION]);
+			printf("%-15s" , "SOURCE : ");
+			str_to_hex_print(p.port[SOURCE]);
+			printf("\n\n");
 		}
 		//*/
 	}
