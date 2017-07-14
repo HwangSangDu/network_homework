@@ -27,4 +27,6 @@ typedef struct  packet_address
 	//*/
 }Packet;
 
+u_char* my_memcpy(u_char* d, const u_char* s, int len);
+void str_to_hex_print(u_char* str , int len);
 #endif
