@@ -11,10 +11,7 @@
 #define ETHSIZE 14
 #define IPSIZE 20
 
-
-
-
-struct packet_address
+typedef struct  packet_address
 {
 	///*
 	u_char eth[2][MACADDRSIZE];
@@ -28,12 +25,9 @@ struct packet_address
 	int port[2];
 	int data[2];
 	//*/
-	void str_to_hex_print(u_char* str)
-		{
-		u_ch
-};
+}Packet;
 
-typedef struct  packet_address Packet;
+
 /*
 u_char* my_strncpy(u_char* d, const u_char* s, int len)
 {
