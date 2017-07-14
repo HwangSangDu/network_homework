@@ -1,22 +1,26 @@
  #include <pcap.h>
  #include <stdio.h>
-
+ #include <string.h>
+//eth.smac, eth.dmac / ip.sip, ip.dip / tcp.sport, tcp.dport / data
+typedef struct  packet_address
+{
+	u_char eth[2][10];
+	u_char* ip[2];
+	u_char* port[2];
+	u_char* data[2];
+}Packet;
  int main(int argc, char *argv[])
-
  {
-	
+ 	Packet p;
+ 	int i;
 	pcap_t *handle;			/* Session handle */
-	
 	char *dev;			/* The device to sniff on */
 	char errbuf[PCAP_ERRBUF_SIZE];	/* Error string */
 	struct bpf_program fp;		/* The compiled filter */
 	char filter_exp[] = "port 80";	/* The filter expression */
 	bpf_u_int32 mask;		/* Our netmask */
 	bpf_u_int32 net;		/* Our IP */
-	struct pcap_pkthdr* header;	/* The header that pcap gives us */
-
-
-
+	struct pcap_pkthdr header;	/* The header that pcap gives us */
 	const u_char *packet;		/* The actual packet */
 
 	/* Define the device */
@@ -47,15 +51,31 @@
 		return(2);
 	}
 	/* Grab a packet */
+
 	while(1)
 	{
-		
-		//packet = pcap_next(handle, &header);
-		pcap_next_ex(handle,&header, &packet);
-		
+		packet = pcap_next(handle, &header);
+		/*
+		if(packet){
+			for (i = 0; i < 6; ++i)
+				printf("%x" ,packet[i]);
+			printf("\n");
+		}
+		//*/
+		///*
+		printf("Jacked a packet with length of [%d]\n", header.len);
+		if(packet)//packet != NULL
+		{
+			strncpy(p.eth[0],packet ,6);
+			for (i = 0; i < strlen(p.eth[0]); ++i)
+				printf("%x",*(p.eth[0]));
+			printf("\n");
+		}
+		//*/
 		/* Print its length */
-		printf("Jacked a packet with length of [%d]\n", header->len);
+		
 		/* And close the session */
+		
 	}
 	pcap_close(handle);
 	return(0);
