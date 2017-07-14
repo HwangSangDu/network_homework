@@ -3,13 +3,18 @@
 #include <string.h>
 #include <stdlib.h>
 //eth.smac, eth.dmac / ip.sip, ip.dip / tcp.sport, tcp.dport / data
+#define DESTINATION 1
+#define SOURCE 2
+#define MACSIZE 6
+#define IPSIZE 4
+#define PORTSIZE 2
 typedef struct  packet_address
 {
 	///*
-	u_char* eth[2];
-	u_char* ip[2];
-	u_char* port[2];
-	u_char* data[2];
+	u_char eth[2][MAXSIZE];
+	u_char ip[2][IPSIZE];
+	u_char port[2][PORTSIZE];
+	u_char data[2];
 	//*/
 	/*
 	int eth[2];//start ,end
@@ -18,16 +23,28 @@ typedef struct  packet_address
 	int data[2];
 	//*/
 }Packet;
-
+/*
 u_char* my_strncpy(u_char* d, const u_char* s, int len)
 {
+u_int i;
+d = malloc(sizeof(u_char) * (len + 1));
+for (i = 0; i < len; ++i)
+d[i] = s[i];
+d[len] = '\0';
+return d;
+}
+//*/
+
+///*
+u_char* my_memcpy(u_char* d, const u_char* s, int len)
+{
 	u_int i;
-	d = malloc(sizeof(u_char) * (len + 1));
+	d = (u_char *)malloc(sizeof(u_char) * (len + 1));
 	for (i = 0; i < len; ++i)
 		d[i] = s[i];
-	d[len] = '\0';
 	return d;
 }
+//*/
 int main(int argc, char *argv[])
 {
 	Packet p;
@@ -117,6 +134,9 @@ int main(int argc, char *argv[])
 		{
 			//my_strncpy(p.eth[0] , packet , 6);
 			//memcpy(p.eth[0], packet, 6);
+
+			//동적할당을 하고서 매개변수 인자로 넘겨야만 한다.
+			my_memcpy(p.eth[0], packet, 6);
 
 			for (i = 0; i < 6; ++i)
 				printf("%02x", p.eth[0][i]);
