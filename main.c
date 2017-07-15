@@ -4,6 +4,7 @@
 int main(int argc, char *argv[])
 {
 	Packet p;
+	int ip_size , port_size;
 	pcap_t *handle;			/* Session handle */
 	char *dev;			/* The device to sniff on */
 	char errbuf[PCAP_ERRBUF_SIZE];	/* Error string */
@@ -51,12 +52,16 @@ int main(int argc, char *argv[])
 		printf("Jacked a packet with length of [%d]\n", header.len);
 		if (packet)//packet != NULL
 		{
+			ip_size = (packet[ETHSIZE] & 0x0f) << 2;
+			port_size = packet[ETHSIZE + ip_size + 13] << 3;
+
 			my_memcpy(p.eth[DESTINATION], packet, MACADDRSIZE);
 			my_memcpy(p.eth[SOURCE], packet + MACADDRSIZE , MACADDRSIZE);
-			my_memcpy(p.ip[SOURCE], packet + ETHSIZE , IPSIZE);
-			my_memcpy(p.ip[DESTINATION], packet + ETHSIZE + IPSIZE, IPSIZE);
-			my_memcpy(p.port[SOURCE], packet + ETHSIZE + IPSIZE, PORTNUMSIZE);
-			my_memcpy(p.port[DESTINATION], packet + ETHSIZE + IPSIZE + PORTNUMSIZE, PORTNUMSIZE);
+			my_memcpy(p.ip[SOURCE], packet + ETHSIZE + ip_size - IPADDRSIZE*2 , IPADDRSIZE);
+			my_memcpy(p.ip[DESTINATION], packet + ETHSIZE + ip_size - IPADDRSIZE, IPADDRSIZE);
+			my_memcpy(p.port[SOURCE], packet + ETHSIZE + ip_size, PORTNUMSIZE);
+			my_memcpy(p.port[DESTINATION], packet + ETHSIZE + ip_size + PORTNUMSIZE, PORTNUMSIZE);
+			my_memcpy(p.data , packet + ETHSIZE + ip_size + port_size , 15);
 			printf("\n\n");
 			printf("*********** Ethernet *****************\n");
 			printf("%-15s" , "DESTINATION : ");
@@ -73,7 +78,10 @@ int main(int argc, char *argv[])
 			str_to_hex_print(p.port[DESTINATION] , PORTNUMSIZE);
 			printf("%-15s" , "SOURCE : ");
 			str_to_hex_print(p.port[SOURCE] , PORTNUMSIZE);
+			printf("%-15s" , "Data : ");
+			str_to_hex_print(p.data , 15);
 			printf("\n\n");
+
 		}
 		//*/
 	}

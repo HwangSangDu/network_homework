@@ -2,22 +2,20 @@
 #define __PACKET_H__
 
 #include "common.h"
-
 #define DESTINATION 0
 #define SOURCE 1
 #define MACADDRSIZE 6
 #define IPADDRSIZE 4
 #define PORTNUMSIZE 2
 #define ETHSIZE 14
-#define IPSIZE 20
-
+#define DATAMAXSIZE 1460
 typedef struct  packet_address
 {
 	///*
 	u_char eth[2][MACADDRSIZE];
 	u_char ip[2][IPADDRSIZE];
 	u_char port[2][PORTNUMSIZE];
-	u_char data[2];
+	u_char data[DATAMAXSIZE];
 	//*/
 	/*
 	int eth[2];//start ,end
