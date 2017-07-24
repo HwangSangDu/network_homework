@@ -6,6 +6,7 @@
 #include <netinet/ether.h>
 #include <stdlib.h>
 #include <fcntl.h>
+#include <string.h>
 //#include <linux/ip.h>
 #include <netinet/ip.h>
 #include <arpa/inet.h>

@@ -3,13 +3,14 @@
 
 int main(int argc, char *argv[])
 {
-	uint32_t flag;
+
+	uint32_t flag , i;
 	uint32_t ip_size , port_size;
 	pcap_t *handle;			/* Session handle */
 	char *dev;			/* The device to sniff on */
 	char errbuf[PCAP_ERRBUF_SIZE];	/* Error string */
 	struct bpf_program fp;		/* The compiled filter */
-	char filter_exp[] = "port 80";	/* The filter expression */
+	char *filter_exp;	/* The filter expression */
 	bpf_u_int32 mask;		/* Our netmask */
 	bpf_u_int32 net;		/* Our IP */
 	struct pcap_pkthdr* header;	/* The header that pcap gives us */
@@ -20,6 +21,12 @@ int main(int argc, char *argv[])
 	const u_char *temp;
 	u_char dst_buf[32];
 	u_char src_buf[32];
+	//default 값
+	if(argc < 2){
+		printf("default value\n");
+		filter_exp = "port 80";
+		//strncpy(filter_exp, "port 80",strlen("port 80"));
+	}
 
 								/* Define the device */
 	dev = pcap_lookupdev(errbuf);
@@ -40,13 +47,20 @@ int main(int argc, char *argv[])
 		return(2);
 	}
 	/* Compile and apply the filter */
-	if (pcap_compile(handle, &fp, filter_exp, 0, net) == -1) {
-		fprintf(stderr, "Couldn't parse filter %s: %s\n", filter_exp, pcap_geterr(handle));
-		return(2);
-	}
-	if (pcap_setfilter(handle, &fp) == -1) {
-		fprintf(stderr, "Couldn't install filter %s: %s\n", filter_exp, pcap_geterr(handle));
-		return(2);
+	for (i = 1; i < argc; ++i)
+	{
+		//filter_exp = argv[i];
+		strncpy(filter_exp,argv[i],strlen(argv[i]));
+		///*
+		if (pcap_compile(handle, &fp, filter_exp, 0, net) == -1) {
+			fprintf(stderr, "Couldn't parse filter %s: %s\n", filter_exp, pcap_geterr(handle));
+			return(2);
+		}
+		if (pcap_setfilter(handle, &fp) == -1) {
+			fprintf(stderr, "Couldn't install filter %s: %s\n", filter_exp, pcap_geterr(handle));
+			return(2);
+		}
+		//*/
 	}
 	/* Grab a packet */
 	//https://www.winpcap.org/docs/docs_40_2/html/group__wpcap__tut4.html 참조
@@ -101,7 +115,7 @@ int main(int argc, char *argv[])
 		printf("DEST PORT=%d\n",ntohs(tcphdr->dest_port));
 
 		
-
+		printf("\n");
 
 	}
 	pcap_close(handle);
