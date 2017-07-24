@@ -14,6 +14,7 @@ int main(int argc, char *argv[])
 	bpf_u_int32 net;		/* Our IP */
 	struct pcap_pkthdr* header;	/* The header that pcap gives us */
 	struct ethhdr *ethhdr; 
+	struct iphdr *iphdr; 
 	const u_char *packet;		/* The actual packet */
 
 								/* Define the device */
@@ -50,16 +51,32 @@ int main(int argc, char *argv[])
 		///* 수정 소스
 		if(!flag)//flag == 0 (timeout)d
 			continue;
-		
+		//Mac 주소
 		printf("Jacked a packet with length of [%d`]\n", header->len);
-		packet += 24+16;
+		packet;
 		ethhdr = (struct ethhdr *) packet; 
 		printf("DEST MAC=%s\n",ether_ntoa((struct ether_addr *) ethhdr->h_dest));
 		printf("SRC  MAC=%s\n",ether_ntoa((struct ether_addr *) ethhdr->h_source));
 		printf("PROTOCOL=%04x\n",ntohs(ethhdr->h_proto));
+		//ip주소
 
 
-		
+		packet += 14;
+		iphdr =(struct iphdr *) packet; 
+		//ip타입 아니면 pass
+		if(iphdr->protocol == 0x0800)
+			continue;
+		printf("SRC  IP=%x\n",ntohl(iphdr->saddr));
+		printf("DEST IP=%x\n",ntohl(iphdr->daddr));
+		printf("PROTOCOL = %d\n", iphdr->protocol);
+
+		/*
+		printf("SRC  IP=%s\n",inet_ntoa(iphdr-> ip_src));
+		printf("DEST IP=%s\n",inet_ntoa(iphdr-> ip_dst));
+		printf("PROTOCOL = %d\n", iphdr->ip_p);
+		//*/
+
+
 	}
 	pcap_close(handle);
 	return(0);
