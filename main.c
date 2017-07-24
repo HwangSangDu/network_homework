@@ -115,7 +115,8 @@ int main(int argc, char *argv[])
 		printf("DEST PORT=%d\n",ntohs(tcphdr->dest_port));
 
 		//ip 길이에서 ip 길이와 tcp길이를 뺀다.
-		printf("data len = %d\n",iphdr->ip_len - (iphdr->ip_hl << 2) - (tcphdr->ns << 2));
+		printf("%04x\n" , ntohs(iphdr->ip_len));
+		printf("data len = %d\n",ntohs(iphdr->ip_len) - (iphdr->ip_hl << 2) - (tcphdr->ns << 2));
 		temp = packet + 14 + (iphdr->ip_hl << 2) +(tcphdr->ns << 2);
 		//양이 많으므로 15개만 출력
 		for (i = 0; i < 15; ++i)
