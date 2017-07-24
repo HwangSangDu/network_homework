@@ -14,10 +14,12 @@ int main(int argc, char *argv[])
 	bpf_u_int32 net;		/* Our IP */
 	struct pcap_pkthdr* header;	/* The header that pcap gives us */
 	struct ethhdr *ethhdr; 
-	struct iphdr *iphdr; 
+	struct ip *iphdr; 
 	struct tcp_header *tcphdr;
 	const u_char *packet;		/* The actual packet */
 	const u_char *temp;
+	u_char dst_buf[32];
+	u_char src_buf[32];
 
 								/* Define the device */
 	dev = pcap_lookupdev(errbuf);
@@ -64,24 +66,41 @@ int main(int argc, char *argv[])
 
 
 		temp = packet + 14;
-		iphdr =(struct iphdr *) temp; 
+		iphdr =(struct ip *) temp; 
 		//ip타입 아니면 pass
+		if(iphdr->ip_p == 0x0800)
+			continue;
+
+		///*
+
+		//printf("SRC  IP=%s\n",inet_ntoa(iphdr-> ip_src));
+		//printf("DEST IP=%s\n",inet_ntoa(iphdr-> ip_dst));
+		/* ntoa --> ntop */
+
+		inet_ntop(AF_INET, &(iphdr-> ip_src) , src_buf , sizeof(src_buf));
+		inet_ntop(AF_INET, &(iphdr-> ip_dst) , dst_buf , sizeof(dst_buf));
+		printf("SRC  IP=%s\n",src_buf);
+		printf("DEST IP=%s\n",dst_buf); 
+
+
+		printf("PROTOCOL = %d\n", iphdr->ip_p);
+		temp = packet + 14 + (iphdr->ip_hl << 2);
+		//*/
+
+		/*
 		if(iphdr->protocol == 0x0800)
 			continue;
 		printf("SRC  IP=%x\n",ntohl(iphdr->saddr));
 		printf("DEST IP=%x\n",ntohl(iphdr->daddr));
 		printf("PROTOCOL = %d\n", iphdr->protocol);
-
 		temp = packet + 14 + (iphdr->ihl << 2);
+		//*/
+		
 		tcphdr = (struct tcp_header *)temp;
 		printf("SRC  PORT=%d\n",ntohs(tcphdr->source_port));
 		printf("DEST PORT=%d\n",ntohs(tcphdr->dest_port));
 
-		/*
-		printf("SRC  IP=%s\n",inet_ntoa(iphdr-> ip_src));
-		printf("DEST IP=%s\n",inet_ntoa(iphdr-> ip_dst));
-		printf("PROTOCOL = %d\n", iphdr->ip_p);
-		//*/
+		
 
 
 	}

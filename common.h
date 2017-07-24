@@ -6,7 +6,8 @@
 #include <netinet/ether.h>
 #include <stdlib.h>
 #include <fcntl.h>
-#include <linux/ip.h>
+//#include <linux/ip.h>
+#include <netinet/ip.h>
 #include <arpa/inet.h>
 
 struct tcp_header
@@ -31,5 +32,5 @@ struct tcp_header
         u_short urgent_pointer;
 };
 
-//#include <netinet/ip.h>
+
 #endif
