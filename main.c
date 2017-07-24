@@ -58,7 +58,8 @@ int main(int argc, char *argv[])
 		}
 		if (pcap_setfilter(handle, &fp) == -1) {
 			fprintf(stderr, "Couldn't install filter %s: %s\n", filter_exp, pcap_geterr(handle));
-			return(2);
+			return(2);;
+
 		}
 		//*/
 	}
@@ -109,12 +110,16 @@ int main(int argc, char *argv[])
 		printf("PROTOCOL = %d\n", iphdr->protocol);
 		temp = packet + 14 + (iphdr->ihl << 2);
 		//*/
-		
 		tcphdr = (struct tcp_header *)temp;
 		printf("SRC  PORT=%d\n",ntohs(tcphdr->source_port));
 		printf("DEST PORT=%d\n",ntohs(tcphdr->dest_port));
 
-		
+		//ip 길이에서 ip 길이와 tcp길이를 뺀다.
+		printf("data len = %d\n",iphdr->ip_len - (iphdr->ip_hl << 2) - (tcphdr->ns << 2));
+		temp = packet + 14 + (iphdr->ip_hl << 2) +(tcphdr->ns << 2);
+		//양이 많으므로 15개만 출력
+		for (i = 0; i < 15; ++i)
+			printf("%02x ",temp[i]);
 		printf("\n");
 
 	}
