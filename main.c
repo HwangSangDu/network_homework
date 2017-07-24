@@ -3,8 +3,8 @@
 
 int main(int argc, char *argv[])
 {
-	int flag;
-	int ip_size , port_size;
+	uint32_t flag;
+	uint32_t ip_size , port_size;
 	pcap_t *handle;			/* Session handle */
 	char *dev;			/* The device to sniff on */
 	char errbuf[PCAP_ERRBUF_SIZE];	/* Error string */
@@ -15,7 +15,9 @@ int main(int argc, char *argv[])
 	struct pcap_pkthdr* header;	/* The header that pcap gives us */
 	struct ethhdr *ethhdr; 
 	struct iphdr *iphdr; 
+	struct tcp_header *tcphdr;
 	const u_char *packet;		/* The actual packet */
+	const u_char *temp;
 
 								/* Define the device */
 	dev = pcap_lookupdev(errbuf);
@@ -53,22 +55,27 @@ int main(int argc, char *argv[])
 			continue;
 		//Mac 주소
 		printf("Jacked a packet with length of [%d`]\n", header->len);
-		packet;
-		ethhdr = (struct ethhdr *) packet; 
+		temp = packet;
+		ethhdr = (struct ethhdr *) temp; 
 		printf("DEST MAC=%s\n",ether_ntoa((struct ether_addr *) ethhdr->h_dest));
 		printf("SRC  MAC=%s\n",ether_ntoa((struct ether_addr *) ethhdr->h_source));
 		printf("PROTOCOL=%04x\n",ntohs(ethhdr->h_proto));
 		//ip주소
 
 
-		packet += 14;
-		iphdr =(struct iphdr *) packet; 
+		temp = packet + 14;
+		iphdr =(struct iphdr *) temp; 
 		//ip타입 아니면 pass
 		if(iphdr->protocol == 0x0800)
 			continue;
 		printf("SRC  IP=%x\n",ntohl(iphdr->saddr));
 		printf("DEST IP=%x\n",ntohl(iphdr->daddr));
 		printf("PROTOCOL = %d\n", iphdr->protocol);
+
+		temp = packet + 14 + (iphdr->ihl << 2);
+		tcphdr = (struct tcp_header *)temp;
+		printf("SRC  PORT=%d\n",ntohs(tcphdr->source_port));
+		printf("DEST PORT=%d\n",ntohs(tcphdr->dest_port));
 
 		/*
 		printf("SRC  IP=%s\n",inet_ntoa(iphdr-> ip_src));
